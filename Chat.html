@@ -1,1 +1,55 @@
-<script src="https://minnit.chat/js/embed.js?c=1772345192" defer></script><span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/225952183862980/c/Main?embed" data-style="width:1000px;height:500px;" data-version="1.55">Chat</span><p class="powered-by-minnit"><a href="https://minnit.chat" target="_blank">Group chat provided by Minnit</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <style>
+        /* Reset margins and prevent page scrolling */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a1a; /* Matches dark mode chats */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Container that forces the chat to fit the screen exactly */
+        .chat-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Seamless iframe styling to prevent lag and clipping */
+        .chat-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* Optimizes rendering performance on mobile */
+            -webkit-overflow-scrolling: touch; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <!-- Replace the src URL below with your actual Minnit embed URL -->
+        <iframe 
+            src="https://organizations.minnit.chat/225952183862980/Main" 
+            allow="geolocation; microphone; camera; fullscreen"
+            sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+        </iframe >
+    </div>
+
+</body>
+</html>
