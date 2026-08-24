@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Schoology - System Maintenance</title>
+    <link rel="icon" type="image/png" href="https://finalsite.net">
+    <style>
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            background-color: #000000; color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box; -webkit-font-smoothing: antialiased;
+        }
+        .spinner { width: 50px; height: 50px; border: 3px solid #1a1a1a; border-top: 3px solid #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .console {
+            width: 100%; max-width: 500px; background: #111; border: 1px solid #222; border-radius: 6px;
+            padding: 15px; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px;
+            color: #4af626; height: 160px; overflow-y: auto; margin-top: 25px; box-sizing: border-box;
+        }
+        .line { margin-bottom: 6px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="spinner"></div>
+    <div class="title">Schoology Core Security Update</div>
+    <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
+        Monitoring network architecture patches...
+    </div>
+
+    <div class="console" id="console">
+        <div class="line">> Establishing connection matrix...</div>
+    </div>
+
+    <script>
+        // CONFIGURATION: Must match your index.html KVdb bucket URL exactly
+        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw/";
+        
+        const consoleLog = document.getElementById('console');
+        const statusText = document.getElementById('status-text');
+
+        const loops = [
+            "Syncing codebase patches with central GitHub master branch...",
+            "Purging older document token caches to optimize system storage...",
+            "Enforcing modern SSL parameter controls across layout frames...",
+            "Securing iframe borders against external cross-site interception loops...",
+            "Applying complete data-leak firewalls to active communication networks..."
+        ];
+
+        // Loop the terminal text display infinitely while lockout is active
+        let i = 0;
+        function showLogs() {
+            let msg = loops[i % loops.length];
+            statusText.innerText = msg;
+            let line = document.createElement('div');
+            line.className = 'line';
+            line.innerText = `> ${msg}`;
+            consoleLog.appendChild(line);
+            if(consoleLog.childNodes.length > 20) consoleLog.removeChild(consoleLog.firstChild);
+            consoleLog.scrollTop = consoleLog.scrollHeight;
+            i++;
+            setTimeout(showLogs, 4000);
+        }
+        showLogs();
+
+        // Release Monitoring Loop: Checks if owner finished update. If true, returns user to chat.
+        setInterval(() => {
+            fetch(`${KVDB_BUCKET_URL}/update_lockout`)
+            .then(res => res.text())
+            .then(state => {
+                if (state.trim() !== 'true') {
+                    window.location.replace("index.html");
+                }
+            });
+        }, 2000);
+    </script>
+</body>
+</html>
