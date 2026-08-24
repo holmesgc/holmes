@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Hardcoded Browser Tab Variables -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Schoology</title>
-    <link rel="icon" type="image/png" href="https://resources.finalsite.net/images/f_auto,q_auto/v1626100427/k12albemarleorg/uj41eppe27bunrvhwnep/PowerSchoolLogos_Vertical-01.png">
+    
+    <!-- Explicit Tab Icon Assets -->
+    <link rel="icon" type="image/png" href="https://finalsite.net">
+    <link rel="shortcut icon" type="image/png" href="https://finalsite.net">
+    <link rel="apple-touch-icon" href="https://finalsite.net">
+
     <style>
+        /* Block default frame anomalies and lock full-viewport aspect */
         html, body {
             margin: 0;
             padding: 0;
@@ -16,24 +23,34 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
         }
+        
         .main-wrapper {
             position: relative;
             width: 100%;
             height: 100%;
             display: flex;
         }
+
+        /* Seamless layout viewport shell */
         .chat-container {
             flex: 1;
             height: 100%;
+            position: relative;
+            z-index: 1;
         }
+
         .chat-container iframe {
             width: 100%;
             height: 100%;
             border: none;
             display: block;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
             -webkit-overflow-scrolling: touch;
         }
-        /* Hidden Operator Button Area */
+
+        /* Administration control center design properties */
         .admin-trigger {
             position: absolute;
             right: 15px;
@@ -48,9 +65,10 @@
             font-size: 13px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none; /* Becomes visible if you unlock via console or script */
+            display: none; 
         }
-        /* Hidden trigger zone in top right corner (click 5 times to reveal panel) */
+
+        /* Secret target box (Click 5 times in top right) */
         .secret-zone {
             position: absolute;
             top: 0;
@@ -60,6 +78,7 @@
             z-index: 101;
             cursor: pointer;
         }
+
         .admin-sidebar {
             position: absolute;
             top: 0;
@@ -70,7 +89,7 @@
             color: #e0e0e0;
             box-shadow: -5px 0 25px rgba(0,0,0,0.4);
             transform: translateX(100%);
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             z-index: 99;
             box-sizing: border-box;
             display: flex;
@@ -78,6 +97,7 @@
             border-left: 1px solid #3c3c3c;
         }
         .main-wrapper.sidebar-active .admin-sidebar { transform: translateX(0); }
+        
         .sidebar-header {
             padding: 20px;
             background: #1e1e1e;
@@ -98,7 +118,6 @@
 </head>
 <body>
 
-    <!-- Secret invisible click zone to trigger login prompt -->
     <div class="secret-zone" onclick="clickCounter()"></div>
 
     <div class="main-wrapper" id="app-container">
@@ -106,7 +125,7 @@
 
         <div class="chat-container">
             <iframe 
-                src="https://organizations.minnit.chat/225952183862980/Main" 
+                src="https://minnit.chat" 
                 allow="geolocation; microphone; camera; fullscreen"
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
             </iframe>
@@ -127,18 +146,20 @@
     </div>
 
     <script>
-        // CONFIGURATION: Put your KVdb bucket URL here
-        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw/";
+        // Connected to your customized live KVdb bucket
+        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw";
         
         let sessionRole = sessionStorage.getItem('owner_auth') || "user";
         let updateActive = false;
         let clickCount = 0;
 
+        // Force browser title locks to bypass frame overrides
+        document.title = "Schoology";
+
         if (sessionRole === "owner") {
             document.getElementById('ops-btn').style.display = "block";
         }
 
-        // Secret authentication access
         function clickCounter() {
             clickCount++;
             if (clickCount >= 5) {
@@ -157,7 +178,6 @@
             document.getElementById('app-container').classList.toggle('sidebar-active');
         }
 
-        // Pushes the state globally to KVdb
         function toggleGlobalUpdate() {
             const btn = document.getElementById('update-btn');
             const targetState = !updateActive;
@@ -182,14 +202,13 @@
             });
         }
 
-        // Synchronization Loop: Continually checks cloud network status
+        // Monitoring sync loop running every 2 seconds
         setInterval(() => {
             fetch(`${KVDB_BUCKET_URL}/update_lockout`)
             .then(res => res.text())
             .then(state => {
                 const liveStatus = (state.trim() === 'true');
                 
-                // Track internal panel text for owner tracking stability
                 if (sessionRole === "owner") {
                     updateActive = liveStatus;
                     const btn = document.getElementById('update-btn');
@@ -204,13 +223,12 @@
                     }
                 }
 
-                // Force non-owners over to the system maintenance loop instantly
                 if (liveStatus && sessionRole !== "owner") {
                     window.location.replace("update.html");
                 }
             })
-            .catch(err => console.log("Network sync tracking issue:", err));
-        }, 2000); // Screens network settings every 2 seconds
+            .catch(err => console.log("Sync issue:", err));
+        }, 2000);
     </script>
 </body>
 </html>
