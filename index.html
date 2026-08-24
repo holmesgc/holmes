@@ -1,119 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Hardcoded Browser Tab Variables -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Schoology</title>
     
-    <!-- Explicit Tab Icon Assets -->
     <link rel="icon" type="image/png" href="https://finalsite.net">
     <link rel="shortcut icon" type="image/png" href="https://finalsite.net">
     <link rel="apple-touch-icon" href="https://finalsite.net">
 
     <style>
-        /* Block default frame anomalies and lock full-viewport aspect */
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #1a1a1a;
+            margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
+            background-color: #1a1a1a; -webkit-font-smoothing: antialiased;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-font-smoothing: antialiased;
         }
+        .main-wrapper { position: relative; width: 100%; height: 100%; display: flex; }
+        .chat-container { flex: 1; height: 100%; position: relative; z-index: 1; }
+        .chat-container iframe { width: 100%; height: 100%; border: none; display: block; -webkit-overflow-scrolling: touch; }
         
-        .main-wrapper {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-        }
-
-        /* Seamless layout viewport shell */
-        .chat-container {
-            flex: 1;
-            height: 100%;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chat-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Administration control center design properties */
         .admin-trigger {
-            position: absolute;
-            right: 15px;
-            top: 15px;
-            z-index: 100;
-            background: #0277bd;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
+            position: absolute; right: 15px; top: 15px; z-index: 100; background: #0277bd;
+            color: white; border: none; padding: 10px 16px; border-radius: 20px;
+            font-weight: 600; font-size: 13px; cursor: pointer; display: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            display: none; 
         }
-
-        /* Secret target box (Click 5 times in top right) */
-        .secret-zone {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 40px;
-            height: 40px;
-            z-index: 101;
-            cursor: pointer;
-        }
-
+        .secret-zone { position: absolute; top: 0; right: 0; width: 40px; height: 40px; z-index: 101; cursor: pointer; }
+        
         .admin-sidebar {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 320px;
-            height: 100%;
-            background: #252526;
-            color: #e0e0e0;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.4);
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 99;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            border-left: 1px solid #3c3c3c;
+            position: absolute; top: 0; right: 0; width: 320px; height: 100%;
+            background: #252526; color: #e0e0e0; z-index: 300; display: flex;
+            flex-direction: column; border-left: 1px solid #3c3c3c;
+            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.4); box-sizing: border-box;
         }
         .main-wrapper.sidebar-active .admin-sidebar { transform: translateX(0); }
-        
-        .sidebar-header {
-            padding: 20px;
-            background: #1e1e1e;
-            border-bottom: 1px solid #333;
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .sidebar-header { padding: 20px; background: #1e1e1e; border-bottom: 1px solid #333; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         .close-sidebar { background: transparent; border: none; color: #888; font-size: 20px; cursor: pointer; }
         .sidebar-content { padding: 20px; flex: 1; }
         .panel-section { background: #1e1e1e; border-radius: 8px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
         .panel-title { font-size: 12px; text-transform: uppercase; color: #0288d1; margin-bottom: 12px; font-weight: 700; }
         .action-btn { width: 100%; background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; }
         .action-btn.updating { background: #ff9800; }
+
+        .maintenance-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000000; color: #ffffff; z-index: 200; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+        }
+        .spinner { width: 50px; height: 50px; border: 3px solid #1a1a1a; border-top: 3px solid #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .m-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .console {
+            width: 100%; max-width: 500px; background: #111; border: 1px solid #222; border-radius: 6px;
+            padding: 15px; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px;
+            color: #4af626; height: 160px; overflow-y: auto; margin-top: 25px; box-sizing: border-box;
+        }
+        .line { margin-bottom: 6px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -143,17 +87,26 @@
                 </div>
             </div>
         </div>
-    </div>
 
+        <div class="maintenance-overlay" id="lockout-screen">
+            <div class="spinner"></div>
+            <div class="m-title">Core Security Update</div>
+            <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
+                Monitoring network architecture patches...
+            </div>
+            <div class="console" id="console">
+                <div class="line">> Establishing connection matrix...</div>
+            </div>
+        </div>
+
+    </div>
     <script>
-        // Connected to your customized live KVdb bucket
-        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw";
+        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw/";
         
         let sessionRole = sessionStorage.getItem('owner_auth') || "user";
         let updateActive = false;
         let clickCount = 0;
 
-        // Force browser title locks to bypass frame overrides
         document.title = "Schoology";
 
         if (sessionRole === "owner") {
@@ -202,12 +155,41 @@
             });
         }
 
-        // Monitoring sync loop running every 2 seconds
+        const loops = [
+            "Syncing codebase patches with central GitHub master branch...",
+            "Purging older document token caches to optimize system storage...",
+            "Enforcing modern SSL parameter controls across layout frames...",
+            "Securing iframe borders against external cross-site interception loops...",
+            "Applying complete data-leak firewalls to active communication networks..."
+        ];
+
+        const consoleLog = document.getElementById('console');
+        const statusText = document.getElementById('status-text');
+        let logIndex = 0;
+
+        function runRollingLogs() {
+            const overlay = document.getElementById('lockout-screen');
+            if (overlay && overlay.style.display === "flex") {
+                let msg = loops[logIndex % loops.length];
+                statusText.innerText = msg;
+                let line = document.createElement('div');
+                line.className = 'line';
+                line.innerText = `> ${msg}`;
+                consoleLog.appendChild(line);
+                if(consoleLog.childNodes.length > 20) consoleLog.removeChild(consoleLog.firstChild);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
+                logIndex++;
+            }
+            setTimeout(runRollingLogs, 4000);
+        }
+        runRollingLogs();
+
         setInterval(() => {
             fetch(`${KVDB_BUCKET_URL}/update_lockout`)
             .then(res => res.text())
             .then(state => {
                 const liveStatus = (state.trim() === 'true');
+                const overlay = document.getElementById('lockout-screen');
                 
                 if (sessionRole === "owner") {
                     updateActive = liveStatus;
@@ -223,11 +205,15 @@
                     }
                 }
 
-                if (liveStatus && sessionRole !== "owner") {
-                    window.location.replace("update.html");
+                if (liveStatus) {
+                    if (sessionRole !== "owner") {
+                        overlay.style.display = "flex";
+                    }
+                } else {
+                    overlay.style.display = "none";
                 }
             })
-            .catch(err => console.log("Sync issue:", err));
+            .catch(err => console.log("Sync tracking issue:", err));
         }, 2000);
     </script>
 </body>
