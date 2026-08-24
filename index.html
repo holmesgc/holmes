@@ -16,7 +16,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         
-        /* Master structural column that anchors the layout */
         .main-wrapper { 
             position: relative; 
             width: 100%; 
@@ -25,32 +24,48 @@
             flex-direction: column; 
         }
 
-        /* Top row chat window footprint */
         .chat-container { 
             width: 100%;
-            height: 92%; /* Consumes the upper workspace area */
+            height: 100%; /* Spans full height until owner authenticates */
             position: relative; 
             z-index: 1; 
+            transition: height 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         .chat-container iframe { width: 100%; height: 100%; border: none; display: block; -webkit-overflow-scrolling: touch; }
         
-        /* Secret verification click zone layout */
-        .secret-zone { position: absolute; bottom: 0; left: 0; width: 50px; height: 8%; z-index: 105; cursor: pointer; }
+        /* Floating authentication trigger key */
+        .system-ops-trigger {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            z-index: 105;
+            background: #252526;
+            color: #8e8e93;
+            border: 1px solid #3c3c3c;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: background 0.2s, color 0.2s;
+        }
+        .system-ops-trigger:hover { background: #2f2f31; color: #ffffff; }
 
-        /* The Functional Bottom Bar (Only displays when unlocked) */
+        /* Bottom Operations Panel */
         .admin-footer-bar {
             width: 100%;
-            height: 8%; /* Placed cleanly beneath the main embed */
+            height: 8%;
             background-color: #252526;
             border-top: 1px solid #3c3c3c;
-            display: none; /* Managed explicitly via state mapping */
+            display: none; /* Managed explicitly via script */
             align-items: center;
             justify-content: space-between;
             box-sizing: border-box;
             padding: 0 20px;
             z-index: 100;
         }
-        .footer-title { color: #e0e0e0; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; }
+        .footer-title { color: #e0e0e0; font-size: 13px; font-weight: 600; letter-spacing: 0.5px; }
 
         .action-btn { 
             background: #d32f2f; color: white; border: none; 
@@ -59,7 +74,7 @@
         }
         .action-btn.updating { background: #ff9800; }
 
-        /* Lockout sheet layout overlays */
+        /* Lockout screen system mechanics */
         .maintenance-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000000; color: #ffffff; z-index: 200; display: none;
@@ -79,15 +94,15 @@
 </head>
 <body>
 
-    <!-- Invisible trigger zone located in the lower-left footer segment -->
-    <div class="secret-zone" onclick="clickCounter()"></div>
+    <!-- Target operational button template -->
+    <button class="system-ops-trigger" id="gatekeeper-btn" onclick="authenticateAdminSession()">System Access</button>
 
     <div class="main-wrapper" id="app-container">
 
-        <!-- Embedded Workspace Viewport Frame -->
-        <div class="chat-container">
+        <!-- Embedded Workspace Viewport Frame pointing to your custom organization path -->
+        <div class="chat-container" id="workspace-frame">
             <iframe 
-                src="https://organizations.minnit.chat/225952183862980/Main" 
+                src="https://minnit.chat" 
                 allow="geolocation; microphone; camera; fullscreen"
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
             </iframe>
@@ -113,34 +128,34 @@
 
     </div>
     <script>
-        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw/";
+        // Configured directly with your live KVdb database endpoint
+        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw";
         
         let sessionRole = sessionStorage.getItem('owner_auth') || "user";
         let updateActive = false;
-        let clickCount = 0;
 
         document.title = "Schoology";
 
-        // Display operations tool panel layout row if authenticated
+        // Setup rendering profiles immediately based on storage values
         if (sessionRole === "owner") {
-            document.getElementById('ops-bar').style.display = "flex";
-            document.querySelector('.chat-container').style.height = "92%";
-        } else {
-            document.querySelector('.chat-container').style.height = "100%";
+            applyOwnerUILayout();
         }
 
-        // Secret counter lookup sequence targeting the lower edge zone (Click 5 times)
-        function clickCounter() {
-            clickCount++;
-            if (clickCount >= 5) {
-                clickCount = 0;
-                let password = prompt("Enter Administrator Access Key:");
-                if (password === "admin123") {
-                    sessionRole = "owner";
-                    sessionStorage.setItem('owner_auth', 'owner');
-                    document.getElementById('ops-bar').style.display = "flex";
-                    document.querySelector('.chat-container').style.height = "92%";
-                }
+        function applyOwnerUILayout() {
+            document.getElementById('gatekeeper-btn').style.display = "none";
+            document.getElementById('ops-bar').style.display = "flex";
+            document.getElementById('workspace-frame').style.height = "92%";
+        }
+
+        // Live clickable event prompt mapping
+        function authenticateAdminSession() {
+            let password = prompt("Enter Administration Access Key:");
+            if (password === "admin123") {
+                sessionRole = "owner";
+                sessionStorage.setItem('owner_auth', 'owner');
+                applyOwnerUILayout();
+            } else {
+                alert("Access Denied: Invalid System Token.");
             }
         }
 
@@ -197,7 +212,7 @@
         }
         runRollingLogs();
 
-        // Active tracking data query stream loop
+        // Database transaction status verification loops
         setInterval(() => {
             fetch(`${KVDB_BUCKET_URL}/update_lockout`)
             .then(res => res.text())
@@ -227,7 +242,7 @@
                     overlay.style.display = "none";
                 }
             })
-            .catch(err => console.log("Sync issue tracking log:", err));
+            .catch(err => console.log("Sync track alert logs:", err));
         }, 2000);
     </script>
 </body>
