@@ -4,7 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Update</title>
+    
+    <!-- Explicit Tab Icon Assets -->
     <link rel="icon" type="image/png" href="https://finalsite.net">
+    <link rel="shortcut icon" type="image/png" href="https://finalsite.net">
+    <link rel="apple-touch-icon" href="https://finalsite.net">
+
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
@@ -27,7 +32,7 @@
 <body>
 
     <div class="spinner"></div>
-    <div class="title">Security Update</div>
+    <div class="title">Core Security Update</div>
     <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
         Monitoring network architecture patches...
     </div>
@@ -37,8 +42,8 @@
     </div>
 
     <script>
-        // CONFIGURATION: Must match your index.html KVdb bucket URL exactly
-        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw/";
+        // Connected to your customized live KVdb bucket
+        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw";
         
         const consoleLog = document.getElementById('console');
         const statusText = document.getElementById('status-text');
@@ -51,7 +56,6 @@
             "Applying complete data-leak firewalls to active communication networks..."
         ];
 
-        // Loop the terminal text display infinitely while lockout is active
         let i = 0;
         function showLogs() {
             let msg = loops[i % loops.length];
@@ -67,7 +71,7 @@
         }
         showLogs();
 
-        // Release Monitoring Loop: Checks if owner finished update. If true, returns user to chat.
+        // Release check execution loop
         setInterval(() => {
             fetch(`${KVDB_BUCKET_URL}/update_lockout`)
             .then(res => res.text())
