@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Schoology</title>
+    <title>Core Web Portal</title>
     
+    <!-- Updated Favicon Asset Links -->
     <link rel="icon" type="image/png" href="https://cmsv2-assets.apptegy.net/uploads/15799/file/1820214/54a64606-f802-430e-843e-21195e1f090b.png">
     <link rel="shortcut icon" type="image/png" href="https://cmsv2-assets.apptegy.net/uploads/15799/file/1820214/54a64606-f802-430e-843e-21195e1f090b.png">
     <link rel="apple-touch-icon" href="https://cmsv2-assets.apptegy.net/uploads/15799/file/1820214/54a64606-f802-430e-843e-21195e1f090b.png">
@@ -33,6 +34,7 @@
         }
         .chat-container iframe { width: 100%; height: 100%; border: none; display: block; -webkit-overflow-scrolling: touch; }
         
+        /* Floating Operator Entry trigger button styling */
         .system-ops-trigger {
             position: absolute; bottom: 15px; left: 15px; z-index: 105;
             background: #252526; color: #8e8e93; border: 1px solid #3c3c3c;
@@ -42,6 +44,7 @@
         }
         .system-ops-trigger:hover { background: #2f2f31; color: #ffffff; }
 
+        /* Bottom Operational Command Deck Panel */
         .admin-footer-bar {
             width: 100%; height: 8%; background-color: #252526; border-top: 1px solid #3c3c3c;
             display: none; align-items: center; justify-content: space-between;
@@ -56,6 +59,7 @@
         }
         .action-btn.updating { background: #ff9800; }
 
+        /* Unified Global Security Lockdown Layer Overlay screen configuration */
         .maintenance-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000000; color: #ffffff; z-index: 200; display: none;
@@ -64,9 +68,9 @@
         }
         .spinner { width: 50px; height: 50px; border: 3px solid #1a1a1a; border-top: 3px solid #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .m-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
         
-        /* New styling properties for the minute countdown container */
+        /* Neutralized display naming templates rules */
+        .m-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
         .countdown-timer { font-size: 16px; font-weight: 700; color: #0288d1; margin-top: 10px; font-variant-numeric: tabular-nums; }
         
         .console {
@@ -83,41 +87,41 @@
 
     <div class="main-wrapper" id="app-container">
 
+        <!-- Main Viewport containing your specific Minnit Organization path -->
         <div class="chat-container" id="workspace-frame">
             <iframe 
-                src="https://organizations.minnit.chat/225952183862980/Main" 
+                src="https://minnit.chat" 
                 allow="geolocation; microphone; camera; fullscreen"
                 sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
             </iframe>
         </div>
 
         <div class="admin-footer-bar" id="ops-bar">
-            <div class="footer-title">Core Operations Center</div>
-            <button class="action-btn" id="update-btn" onclick="toggleGlobalUpdate()">Trigger Update</button>
+            <div class="footer-title">Core Operations Control Panel</div>
+            <button class="action-btn" id="update-btn" onclick="toggleGlobalUpdate()">Trigger Global Lockout</button>
         </div>
 
+        <!-- Fully Re-Branded Security Screen Overlay (Blocks everyone, including owner) -->
         <div class="maintenance-overlay" id="lockout-screen">
             <div class="spinner"></div>
-            <div class="m-title">Core Security Update</div>
+            <div class="m-title">Core Security Optimization Module</div>
             <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
-                Monitoring network architecture patches...
+                Running site-wide terminal security audits...
             </div>
-            <!-- Live dynamic timer rendering tag node -->
-            <div class="countdown-timer" id="timer-readout">Estimated Time Remaining: 01:00</div>
+            <div class="countdown-timer" id="timer-readout">Estimated Patch Time Remaining: 01:00</div>
             <div class="console" id="console">
-                <div class="line">> Establishing connection matrix...</div>
+                <div class="line">> Connecting to site security subsystem framework...</div>
             </div>
         </div>
 
     </div>
     <script>
-        const KVDB_BUCKET_URL = "https://kvdb.io";
+        // Updated to use your new live KVdb bucket instance
+        const KVDB_BUCKET_URL = "https://kvdb.io/6TCGfCvKBe2N4ZRyXf62jW";
         
         let sessionRole = sessionStorage.getItem('owner_auth') || "user";
         let updateActive = false;
         let localCountdownInterval = null;
-
-        document.title = "Schoology";
 
         if (sessionRole === "owner") {
             applyOwnerUILayout();
@@ -126,7 +130,11 @@
         function applyOwnerUILayout() {
             document.getElementById('gatekeeper-btn').style.display = "none";
             document.getElementById('ops-bar').style.display = "flex";
-            document.getElementById('workspace-frame').style.height = "92%";
+            document.getElementById('workspace-frame').style.height = "92__";
+            
+            // Adjust frame container height smoothly
+            const frame = document.getElementById('workspace-frame');
+            if(frame) frame.style.height = "92%";
         }
 
         function authenticateAdminSession() {
@@ -143,16 +151,15 @@
         function toggleGlobalUpdate() {
             const btn = document.getElementById('update-btn');
             
-            // If update is already running, hitting the button cancels it early
             if (updateActive) {
                 clearLockoutState();
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = "Syncing...";
+            btn.innerText = "Syncing network...";
 
-            // 1. Sync lock state to database with a target expiration time exactly 60 seconds from now
+            // Sets timestamp for exactly 60 seconds (1 minute) from execution moment
             const expiresAt = Date.now() + 60000;
 
             fetch(`${KVDB_BUCKET_URL}/update_lockout`, {
@@ -165,9 +172,8 @@
                 btn.innerText = "End Lockout Mode Early";
                 btn.classList.add('updating');
 
-                // 2. Automatically shut off update flag after 60000ms passes
+                // Automated self-clear cycle after 60 seconds
                 setTimeout(() => {
-                    // Only auto-clear if the owner hasn't manually clicked 'End Lockout early' already
                     if (updateActive) clearLockoutState();
                 }, 60000);
             });
@@ -176,7 +182,7 @@
         function clearLockoutState() {
             const btn = document.getElementById('update-btn');
             btn.disabled = true;
-            btn.innerText = "Clearing...";
+            btn.innerText = "Clearing block...";
 
             fetch(`${KVDB_BUCKET_URL}/update_lockout`, {
                 method: 'PUT',
@@ -190,12 +196,13 @@
             });
         }
 
+        // Neutrally branded site patch log strings array
         const loops = [
-            "Syncing codebase patches with central GitHub master branch...",
-            "Purging older document token caches to optimize system storage...",
-            "Enforcing modern SSL parameter controls across layout frames...",
-            "Securing iframe borders against external cross-site interception loops...",
-            "Applying complete data-leak firewalls to active communication networks..."
+            "Analyzing central hosting master branch code blocks...",
+            "Purging local connection tokens to seal parameter data routes...",
+            "Enforcing transport layer encryption across iframe parameters...",
+            "Patching core source components against third-party cross-site scripts...",
+            "Applying absolute data-leak protective firewalls across host domains..."
         ];
 
         const consoleLog = document.getElementById('console');
@@ -219,7 +226,6 @@
         }
         runRollingLogs();
 
-        // Dynamic visual timer update logic loop
         function startLocalVisualTimer(targetTimestamp) {
             if (localCountdownInterval) clearInterval(localCountdownInterval);
             
@@ -229,7 +235,7 @@
                 const remainingMs = targetTimestamp - Date.now();
                 
                 if (remainingMs <= 0) {
-                    readout.innerText = "Estimated Time Remaining: 00:00";
+                    readout.innerText = "Estimated Patch Time Remaining: 00:00";
                     clearInterval(localCountdownInterval);
                 } else {
                     const totalSeconds = Math.ceil(remainingMs / 1000);
@@ -238,15 +244,15 @@
                     
                     const strMin = String(minutes).padStart(2, '0');
                     const strSec = String(seconds).padStart(2, '0');
-                    readout.innerText = `Estimated Time Remaining: ${strMin}:${strSec}`;
+                    readout.innerText = `Estimated Patch Time Remaining: ${strMin}:${strSec}`;
                 }
             }, 250);
         }
 
-        // Database transaction status synchronization loops
+        // Database status monitor loop checking cloud values every 2 seconds
         setInterval(() => {
             fetch(`${KVDB_BUCKET_URL}/update_lockout`)
-            .then(res => res.json()) // Parse JSON payload containing structural expiration timestamps
+            .then(res => res.json())
             .then(data => {
                 const liveStatus = (data && data.active === true);
                 const overlay = document.getElementById('lockout-screen');
@@ -266,10 +272,9 @@
                 }
 
                 if (liveStatus) {
-                    if (sessionRole !== "owner") {
-                        overlay.style.display = "flex";
-                        startLocalVisualTimer(data.expires);
-                    }
+                    // MODIFIED: Both owner and general users get locked behind the screen now
+                    overlay.style.display = "flex";
+                    startLocalVisualTimer(data.expires);
                 } else {
                     overlay.style.display = "none";
                     if (localCountdownInterval) {
@@ -279,7 +284,6 @@
                 }
             })
             .catch(err => {
-                // Graceful parsing fallback logic if database bucket resets to initial blank string configurations
                 const overlay = document.getElementById('lockout-screen');
                 overlay.style.display = "none";
                 if (localCountdownInterval) clearInterval(localCountdownInterval);
