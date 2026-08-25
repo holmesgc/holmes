@@ -1,1 +1,74 @@
-<script src="https://minnit.chat/js/embed.js?c=1772345192" defer></script><span style="display: none;" class="minnit-chat-sembed" data-chatname="https://organizations.minnit.chat/225952183862980/c/Main?embed" data-style="width:1000px;height:500px;" data-version="1.55">Chat</span><p class="powered-by-minnit"><a href="https://minnit.chat" target="_blank">Chatroom embedded via Minnit Chat</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Live Chat</title>
+    <style>
+        /* Force root containers to take up exactly 100% of the display */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000000;
+        }
+
+        /* Automatically scales to match the exact viewable viewport space */
+        .chat-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            /* dvh handles shifting heights caused by mobile browser address bars */
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Forces Minnit elements to strictly fill out the master container rules */
+        .minnit-chat-sembed, 
+        .minnit-chat-sembed iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+            display: block !important;
+        }
+
+        /* Keeps the required attribute minimal and unobtrusive */
+        .powered-by-minnit {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            margin: 0;
+            font-size: 9px;
+            opacity: 0.2;
+            z-index: 999;
+            pointer-events: none;
+        }
+        .powered-by-minnit a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-wrapper">
+        <script src="https://organizations.minnit.chat/225952183862980/main/" defer></script>
+        
+        <!-- Modified to native fluid styling definitions -->
+        <span style="display: none;" 
+              class="minnit-chat-sembed" 
+              data-chatname="https://minnit.chat" 
+              data-style="width:100%;height:100%;" 
+              data-version="1.55">Chat</span>
+              
+        <p class="powered-by-minnit">
+            <a href="https://minnit.chat" target="_blank">Chatroom embedded via Minnit Chat</a>
+        </p>
+    </div>
+
+</body>
+</html>
