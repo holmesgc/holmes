@@ -3,28 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Update</title>
+    <title>Core Web Portal - Maintenance</title>
     
-    <!-- Explicit Tab Icon Assets -->
-    <link rel="icon" type="image/png" href="https://finalsite.net">
-    <link rel="shortcut icon" type="image/png" href="https://finalsite.net">
-    <link rel="apple-touch-icon" href="https://finalsite.net">
+    <link rel="icon" type="image/png" href="https://apptegy.net">
+    <link rel="shortcut icon" type="image/png" href="https://apptegy.net">
+    <link rel="apple-touch-icon" href="https://apptegy.net">
 
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
-            background-color: #000000; color: #ffffff;
+            background-color: #000000; color: #ffffff; -webkit-font-smoothing: antialiased;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 20px; box-sizing: border-box; -webkit-font-smoothing: antialiased;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; box-sizing: border-box;
         }
         .spinner { width: 50px; height: 50px; border: 3px solid #1a1a1a; border-top: 3px solid #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        
+        .m-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .countdown-timer { font-size: 16px; font-weight: 700; color: #0288d1; margin-top: 10px; font-variant-numeric: tabular-nums; }
+        
         .console {
             width: 100%; max-width: 500px; background: #111; border: 1px solid #222; border-radius: 6px;
             padding: 15px; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px;
-            color: #4af626; height: 160px; overflow-y: auto; margin-top: 25px; box-sizing: border-box;
+            color: #4af626; height: 140px; overflow-y: auto; margin-top: 25px; box-sizing: border-box;
         }
         .line { margin-bottom: 6px; line-height: 1.4; }
     </style>
@@ -32,33 +33,34 @@
 <body>
 
     <div class="spinner"></div>
-    <div class="title">Core Security Update</div>
+    <div class="m-title">Core Security Optimization Module</div>
     <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
-        Monitoring network architecture patches...
+        Running site-wide terminal security audits...
     </div>
-
+    <div class="countdown-timer" id="timer-readout">Estimated Patch Time Remaining: --:--</div>
+    
     <div class="console" id="console">
-        <div class="line">> Establishing connection matrix...</div>
+        <div class="line">> Connecting to site security subsystem framework...</div>
     </div>
 
     <script>
-        // Connected to your customized live KVdb bucket
-        const KVDB_BUCKET_URL = "https://kvdb.io/2thwA92e1EYFLdHXKJwsQw";
-        
         const consoleLog = document.getElementById('console');
         const statusText = document.getElementById('status-text');
+        
+        let logIndex = 0;
+        let targetTime = null;
+        let timerInterval = null;
 
         const loops = [
-            "Syncing codebase patches with central GitHub master branch...",
-            "Purging older document token caches to optimize system storage...",
-            "Enforcing modern SSL parameter controls across layout frames...",
-            "Securing iframe borders against external cross-site interception loops...",
-            "Applying complete data-leak firewalls to active communication networks..."
+            "Analyzing central hosting master branch code blocks...",
+            "Purging local connection tokens to seal parameter data routes...",
+            "Enforcing transport layer encryption across iframe parameters...",
+            "Patching core source components against third-party cross-site scripts...",
+            "Applying absolute data-leak protective firewalls across host domains..."
         ];
 
-        let i = 0;
-        function showLogs() {
-            let msg = loops[i % loops.length];
+        function runRollingLogs() {
+            let msg = loops[logIndex % loops.length];
             statusText.innerText = msg;
             let line = document.createElement('div');
             line.className = 'line';
@@ -66,21 +68,50 @@
             consoleLog.appendChild(line);
             if(consoleLog.childNodes.length > 20) consoleLog.removeChild(consoleLog.firstChild);
             consoleLog.scrollTop = consoleLog.scrollHeight;
-            i++;
-            setTimeout(showLogs, 4000);
+            logIndex++;
+            setTimeout(runRollingLogs, 4000);
         }
-        showLogs();
+        runRollingLogs();
 
-        // Release check execution loop
-        setInterval(() => {
-            fetch(`${KVDB_BUCKET_URL}/update_lockout`)
-            .then(res => res.text())
-            .then(state => {
-                if (state.trim() !== 'true') {
+        // 1. Fetch parameters passed in via the index layout context
+        const urlParams = new URLSearchParams(window.location.search);
+        const expiresParam = urlParams.get('expires');
+
+        if (expiresParam) {
+            targetTime = parseInt(expiresParam);
+            
+            // Protect against manual user canvas clock reset manipulation attempts
+            if (targetTime - Date.now() <= 0) {
+                window.location.replace("index.html");
+            } else {
+                startCountdown();
+            }
+        } else {
+            // Re-route if accessed straight without structural keys
+            window.location.replace("index.html");
+        }
+
+        // 2. Count down. If a user hits refresh, the script instantly resumes counting down correctly
+        function startCountdown() {
+            const readout = document.getElementById('timer-readout');
+            
+            timerInterval = setInterval(() => {
+                const remaining = targetTime - Date.now();
+                
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+                    readout.innerText = "Estimated Patch Time Remaining: 00:00";
+                    
+                    // Countdown complete, release lock and bounce back
                     window.location.replace("index.html");
+                } else {
+                    const totalSecs = Math.ceil(remaining / 1000);
+                    const min = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+                    const sec = String(totalSecs % 60).padStart(2, '0');
+                    readout.innerText = `Estimated Patch Time Remaining: ${min}:${sec}`;
                 }
-            });
-        }, 2000);
+            }, 250);
+        }
     </script>
 </body>
 </html>
