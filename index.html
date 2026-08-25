@@ -9,14 +9,25 @@
     <link rel="shortcut icon" type="image/png" href="https://apptegy.net">
     <link rel="apple-touch-icon" href="https://apptegy.net">
 
+    <!-- Include PieSocket SDK library via secure CDN -->
+    <script src="https://unpkg.com"></script>
+
     <style>
         html, body {
             margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
             background-color: #1a1a1a; -webkit-font-smoothing: antialiased;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .main-wrapper { position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; }
-        .chat-container { width: 100%; height: 100%; position: relative; z-index: 1; transition: height 0.2s ease; }
+        
+        .main-wrapper { 
+            position: relative; width: 100%; height: 100%; 
+            display: flex; flex-direction: column; 
+        }
+
+        .chat-container { 
+            width: 100%; height: 100%; position: relative; z-index: 1; 
+            transition: height 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
         .chat-container iframe { width: 100%; height: 100%; border: none; display: block; -webkit-overflow-scrolling: touch; }
         
         .system-ops-trigger {
@@ -24,6 +35,7 @@
             background: #252526; color: #8e8e93; border: 1px solid #3c3c3c;
             padding: 8px 14px; border-radius: 6px; font-size: 11px; font-weight: 600;
             cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: background 0.2s, color 0.2s;
         }
         .system-ops-trigger:hover { background: #2f2f31; color: #ffffff; }
 
@@ -33,7 +45,32 @@
             box-sizing: border-box; padding: 0 20px; z-index: 100;
         }
         .footer-title { color: #e0e0e0; font-size: 13px; font-weight: 600; }
-        .action-btn { background: #d32f2f; color: white; border: none; padding: 8px 20px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; }
+
+        .action-btn { 
+            background: #d32f2f; color: white; border: none; 
+            padding: 8px 20px; border-radius: 6px; font-weight: 600; 
+            font-size: 13px; cursor: pointer; transition: background 0.2s;
+        }
+        .action-btn.updating { background: #ff9800; cursor: not-allowed; }
+
+        /* Full Screen System Lockdown Mask Overlay */
+        .maintenance-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #000000; color: #ffffff; z-index: 200; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px; box-sizing: border-box;
+        }
+        .spinner { width: 50px; height: 50px; border: 3px solid #1a1a1a; border-top: 3px solid #0288d1; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 25px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .m-title { font-size: 24px; font-weight: 700; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .countdown-timer { font-size: 16px; font-weight: 700; color: #0288d1; margin-top: 10px; font-variant-numeric: tabular-nums; }
+        
+        .console {
+            width: 100%; max-width: 500px; background: #111; border: 1px solid #222; border-radius: 6px;
+            padding: 15px; text-align: left; font-family: 'Courier New', Courier, monospace; font-size: 12px;
+            color: #4af626; height: 140px; overflow-y: auto; margin-top: 25px; box-sizing: border-box;
+        }
+        .line { margin-bottom: 6px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -41,17 +78,41 @@
     <button class="system-ops-trigger" id="gatekeeper-btn" onclick="authenticateAdminSession()">System Access</button>
 
     <div class="main-wrapper" id="app-container">
+
         <div class="chat-container" id="workspace-frame">
-            <iframe src="https://organizations.minnit.chat/225952183862980/Main" allow="geolocation; microphone; camera; fullscreen" sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+            <iframe 
+                src="https://minnit.chat" 
+                allow="geolocation; microphone; camera; fullscreen"
+                sandbox="allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+            </iframe>
         </div>
 
         <div class="admin-footer-bar" id="ops-bar">
             <div class="footer-title">Core Operations Control Panel</div>
-            <button class="action-btn" id="update-btn" onclick="toggleGlobalUpdate()">Trigger Global Lockout</button>
+            <button class="action-btn" id="update-btn" onclick="triggerGlobalLockdown()">Trigger Global Lockout</button>
         </div>
+
+        <!-- The True Global Blackout Screen Overlay -->
+        <div class="maintenance-overlay" id="lockout-screen">
+            <div class="spinner"></div>
+            <div class="m-title">Core Security Optimization Module</div>
+            <div id="status-text" style="color: #aaa; max-width: 400px; font-size: 14px; line-height: 1.5;">
+                Running site-wide terminal security audits...
+            </div>
+            <div class="countdown-timer" id="timer-readout">Estimated Patch Time Remaining: 01:00</div>
+            <div class="console" id="console">
+                <div class="line">> Connecting to site security subsystem framework...</div>
+            </div>
+        </div>
+
     </div>
     <script>
+        // Pre-configured with your validated live PieSocket API key cluster layout
+        const PIESOCKET_API_KEY = "mYCUJtWfII7lqlQx5jayat3rTlOwGyvIOGN4xmhY"; 
+
         let sessionRole = sessionStorage.getItem('owner_auth') || "user";
+        let localCountdownInterval = null;
+        let updateEndTime = null;
 
         if (sessionRole === "owner") applyOwnerUILayout();
 
@@ -70,31 +131,119 @@
             } else { alert("Access Denied."); }
         }
 
-        function toggleGlobalUpdate() {
-            // Compute timestamp expiration target 60 seconds (1 minute) out from this click
-            const expirationTime = Date.now() + 60000;
-            
-            // Re-route the owner and anyone sharing the current domain footprint to update page
-            window.location.replace(`update.html?expires=${expirationTime}`);
+        // Initialize Live WebSocket Core Bridge Connection
+        const pieSocket = new PieSocket.default({
+            clusterId: "://piesocket.com", // Free baseline tier cluster routing override
+            apiKey: PIESOCKET_API_KEY
+        });
+
+        // Open a shared communication channel called "site-security"
+        const sessionChannel = pieSocket.subscribe("site-security");
+
+        // LISTENER: Executes instantly on EVERY user's screen when a cloud signal arrives
+        sessionChannel.on("lock_command", (data) => {
+            updateEndTime = data.expiresAt;
+            localStorage.setItem('activeLockoutTarget', updateEndTime); // Cache flag to prevent refresh bypasses
+            activateLockoutUI();
+        });
+
+        sessionChannel.on("unlock_command", () => {
+            clearLockoutUI();
+        });
+
+        function triggerGlobalLockdown() {
+            const btn = document.getElementById('update-btn');
+            btn.disabled = true;
+            btn.innerText = "Broadcasting...";
+
+            const finalTimestamp = Date.now() + 60000; // Calculates exactly 1 minute out
+
+            // Dispatch command across cloud network to all browsers simultaneously
+            sessionChannel.publish("lock_command", {
+                expiresAt: finalTimestamp
+            });
+
+            // Fallback backup safety reset local loop
+            setTimeout(() => {
+                sessionChannel.publish("unlock_command", {});
+                btn.disabled = false;
+                btn.innerText = "Trigger Global Lockout";
+            }, 60000);
         }
 
-        // Active URL parser interceptor loop logic
-        function checkURLStatus() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const lockTimestamp = urlParams.get('sys_lock');
+        function activateLockoutUI() {
+            document.getElementById('lockout-screen').style.display = "flex";
+            
+            if (localCountdownInterval) clearInterval(localCountdownInterval);
+            const readout = document.getElementById('timer-readout');
 
-            if (lockTimestamp) {
-                const remainingTime = parseInt(lockTimestamp) - Date.now();
-                if (remainingTime > 0) {
-                    // Lockout is verified active. Instantly kick them to update page with the expiration parameter intact
-                    window.location.replace(`update.html?expires=${lockTimestamp}`);
+            localCountdownInterval = setInterval(() => {
+                const remaining = updateEndTime - Date.now();
+                
+                if (remaining <= 0) {
+                    clearInterval(localCountdownInterval);
+                    clearLockoutUI();
+                } else {
+                    const totalSecs = Math.ceil(remaining / 1000);
+                    const min = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+                    const sec = String(totalSecs % 60).padStart(2, '0');
+                    readout.innerText = `Estimated Patch Time Remaining: ${min}:${sec}`;
+                }
+            }, 250);
+        }
+
+        function clearLockoutUI() {
+            document.getElementById('lockout-screen').style.display = "none";
+            localStorage.removeItem('activeLockoutTarget');
+            if (localCountdownInterval) {
+                clearInterval(localCountdownInterval);
+                localCountdownInterval = null;
+            }
+        }
+
+        // Anti-Refresh Integrity Checker: Runs immediately when page loads or resets
+        function checkPersistentLock() {
+            const storedTarget = localStorage.getItem('activeLockoutTarget');
+            if (storedTarget) {
+                const parsedTarget = parseInt(storedTarget);
+                if (parsedTarget - Date.now() > 0) {
+                    updateEndTime = parsedTarget;
+                    activateLockoutUI();
+                } else {
+                    clearLockoutUI();
                 }
             }
         }
-        
-        // Execute URL interception scan immediately upon browser load
-        checkURLStatus();
-        setInterval(checkURLStatus, 1500);
+        checkPersistentLock();
+
+        // Terminal text presentation loops
+        const loops = [
+            "Analyzing central hosting master branch code blocks...",
+            "Purging local connection tokens to seal parameter data routes...",
+            "Enforcing transport layer encryption across iframe parameters...",
+            "Patching core source components against third-party cross-site scripts...",
+            "Applying absolute data-leak protective firewalls across host domains..."
+        ];
+
+        const consoleLog = document.getElementById('console');
+        const statusText = document.getElementById('status-text');
+        let logIndex = 0;
+
+        function runRollingLogs() {
+            if (document.getElementById('lockout-screen').style.display === "flex") {
+                let msg = loops[logIndex % loops.length];
+                statusText.innerText = msg;
+                let line = document.createElement('div');
+                line.className = 'line';
+                line.innerText = `> ${msg}`;
+                consoleLog.appendChild(line);
+                if(consoleLog.childNodes.length > 20) consoleLog.removeChild(consoleLog.firstChild);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
+                logIndex++;
+            }
+            setTimeout(runRollingLogs, 4000);
+        }
+        runRollingLogs();
     </script>
 </body>
 </html>
